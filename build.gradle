@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.schooltalk'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ✅ Spring Boot Core
+    implementation("org.springframework.boot:spring-boot-starter-web") // Spring Web (REST API)
+    implementation("org.springframework.boot:spring-boot-starter-websocket") // WebSocket 지원
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    // Spring Security (JWT 인증)
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa") // JPA (ORM)
+
+    // ✅ Database & Persistence
+    runtimeOnly("mysql:mysql-connector-java") // MySQL 드라이버
+    implementation("org.flywaydb:flyway-core") // DB 마이그레이션 (Flyway)
+
+    // ✅ Caching & Messaging
+    implementation("org.springframework.boot:spring-boot-starter-data-redis") // Redis 캐싱 및 Pub/Sub
+
+    // ✅ Logging & Monitoring
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // Spring Boot Actuator (모니터링)
+    implementation("io.micrometer:micrometer-registry-prometheus") // Prometheus 모니터링
+
+    // ✅ JWT 인증 (보안)
+    implementation("io.jsonwebtoken:jjwt:0.11.5") // JWT 토큰 사용
+
+    // ✅ Lombok (개발 편의성)
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    // ✅ DevTools (개발 편의)
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    // ✅ Test Dependencies
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test") // Security 테스트
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
