@@ -1,1 +1,6 @@
 rootProject.name = 'school-talk'
+
+include 'core'
+include 'api'
+include 'consumer'
+include 'scheduler'
