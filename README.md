@@ -21,7 +21,7 @@
 * Java 17
 * MariaDB
 * JPA
-* Maven
+* Gradle
 * Redis
 * AWS
 * Docker
