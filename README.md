@@ -34,4 +34,4 @@
 ![image](https://github.com/user-attachments/assets/a8e33331-a53c-4df5-9f81-a7ed8885b813)
 
 ## 구조
-![image](https://github.com/user-attachments/assets/a25590a2-ddf1-443a-95ff-8d2abcc9b7a6)
+![image](https://github.com/user-attachments/assets/d5b4ba4c-c3e9-4594-bfe9-00ce6441a5b3)
