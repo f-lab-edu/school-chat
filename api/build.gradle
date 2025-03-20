@@ -6,7 +6,7 @@ plugins {
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-websocket')
-    implementation('org.springframework.boot:spring-boot-starter-security')
+//    implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-data-redis')
 
     implementation('io.jsonwebtoken:jjwt-api:0.11.5')
@@ -16,4 +16,5 @@ dependencies {
     implementation(project(':core'))
 
     developmentOnly('org.springframework.boot:spring-boot-devtools')
+    implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
 }

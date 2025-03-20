@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head  th:fragment="head(title, name)">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title  th:text="'School Chat - ' + ${title}">School Chat</title>
+	<!-- Bootstrap 스타일 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/style.css">
+	<script th:if="${name != null}" th:src="@{'/js/' + ${name} + '.js'}"></script>
+</head>
+<body>
+
+<!-- 공통 헤더 -->
+<header th:fragment="header">
+	<div class="navbar bg-dark text-white p-3">
+		<h1>School Chat</h1>
+	</div>
+</header>
+
+
+</body>
+</html>

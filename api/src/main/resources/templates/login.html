@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('로그인','login')"></head>
+<body>
+<div id="content">
+	<div class="login-container">
+		<div class="login-header">로그인</div>
+
+		<!-- 로그인 폼 -->
+		<form>
+			<input type="text" class="login-input" name="username" placeholder="아이디" required>
+			<input type="password" class="login-input" name="password" placeholder="비밀번호" required>
+			<button type="submit" class="login-button">로그인</button>
+		</form>
+
+		<!-- 로그인 응답 메시지 -->
+		<div id="login-response" style="margin-top: 10px; color: red;"></div>
+	</div>
+</div>
+</body>
+</html>
