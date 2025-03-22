@@ -1,0 +1,33 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.4'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()  // 기본 Maven 중앙 저장소
+    google()        // Google 저장소 추가
+}
+dependencyManagement { // firebase-admin 관련 취약한 이행적 종속성 해결
+    imports {
+        mavenBom "io.netty:netty-bom:4.1.108.Final"
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // FCM
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
+
+
+    developmentOnly('org.springframework.boot:spring-boot-devtools')
+}
+
+test {
+    useJUnitPlatform()
+}
