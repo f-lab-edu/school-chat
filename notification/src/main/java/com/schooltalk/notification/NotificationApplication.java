@@ -1,13 +1,11 @@
-package com.schooltalk;
+package com.schooltalk.notification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SchoolTalkApplication {
-
+public class NotificationApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(SchoolTalkApplication.class, args);
+		SpringApplication.run(NotificationApplication.class, args);
 	}
-
 }
