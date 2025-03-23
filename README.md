@@ -41,8 +41,8 @@
 * MariaDB
 * JPA
 * Gradle
-* Redis
-* Kafka
+* Redis Cache
+* Redis pub/sub
 * AWS
 * Jenkins
 * intellij IDEA
@@ -55,13 +55,9 @@
 
 ## 구조
 
-![Image](https://github.com/user-attachments/assets/b4a5e517-4ddb-4d82-a531-cf81502919cc)
+![Image](https://github.com/user-attachments/assets/2e64ba46-4fdb-49bf-b6ba-66cfd3735ccb)
 
-* Kafka
-    * 채팅 메시지는 1개의 토픽에 저장
-    * 채팅방을 기준으로 파티션을 구분, 채팅방 : 파티션 = 1 : 1
-
-* Redis
+* Redis Cache
     * 채팅방을 기준으로 파티션 구분, 채팅방 : 파티션 = 1 : 1
     * 금칙어는 하나의 파티션에 저장(DB에도 같이 저장)
     
