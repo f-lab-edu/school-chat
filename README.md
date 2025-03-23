@@ -9,7 +9,7 @@
     * 특정 기준으로 개설된 채팅방(예. 반별, 학년별, 동아리)
     * 선생님과 학생들이 1:N으로 참여
     * 선생님이 채팅방을 개설하며, 학생들이 참여
-    * 부가 기능: 금칙어
+    * 부가 기능: 금칙어, 채팅 도배 제한
 * 1:1 채팅
     * 선생님과 학생
         * 선생님과 학생이 1:1로 참여
@@ -50,7 +50,37 @@
 ## DB ERD
 
 [ERD 링크](https://www.erdcloud.com/d/twGddwaPqr6JZH5XP)
-![Image](https://github.com/user-attachments/assets/fde0b6a2-dd6e-458f-99d6-739657a1fdfc)
+
+![Image](https://github.com/user-attachments/assets/23e7ede8-8fd8-4a27-8371-32bdcbcb9ebc)
 
 ## 구조
-![Image](https://github.com/user-attachments/assets/2c4fe706-4bd6-415c-9e78-cf6ccb47b61a)
+
+![Image](https://github.com/user-attachments/assets/b4a5e517-4ddb-4d82-a531-cf81502919cc)
+
+* Kafka
+    * 채팅 메시지는 1개의 토픽에 저장
+    * 채팅방을 기준으로 파티션을 구분, 채팅방 : 파티션 = 1 : 1
+
+* Redis
+    * 채팅방을 기준으로 파티션 구분, 채팅방 : 파티션 = 1 : 1
+    * 금칙어는 하나의 파티션에 저장(DB에도 같이 저장)
+    
+
+### 흐름
+
+* 채팅
+
+    * 전송
+
+        1. web socket 데이터 수신
+        2. Redis를 통해, 도배 탐지
+        3. 도배가 아니면, Redis, kafka, DB에 메시지 전송(비동기)
+    * 수신
+
+        1. kafka에서 메시지 수신
+        2. 금칙어 탐지 및 마스킹
+        3. web socket 데이터 전송
+* 알림/공지
+
+    1. schduler를 이용해 일정 시간마다 알림 내용을 DB에서 조회
+    2. notification에게 조회된 알림 작업 위임
