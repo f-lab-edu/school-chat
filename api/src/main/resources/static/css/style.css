@@ -3,12 +3,14 @@
 /* 공통 변수 */
 :root {
 	/* color */
-	--bg-color: #E3F7B3;
+	--bg-color: #D6EFD8;
 	--dark-green: #1A5319;
 	--main-green: #508D4E;
 	--light-green: #80AF81;
 
 	--light-gray: #F1F1F1;
+	--line-gray: #DDDDDD;
+	--dark-gray: #3E3E3E;
 	--white: #FFFFFF;
 	--text-color: #000000;
 
@@ -25,7 +27,7 @@
 
 	/* design */
 	--border-radius: 10px;
-
+	--padding: 10px;
 	--margin-bottom: 10px;
 
 	/* font */
