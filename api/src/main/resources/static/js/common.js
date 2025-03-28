@@ -1,3 +1,5 @@
+const JWT_HEADER="JWT_TOKEN";
+
 /**
  * API 요청
  * @param url 요청 URL
@@ -10,7 +12,12 @@ async function apiRequest(url, method = "GET", data = null) {
     "Content-Type": "application/x-www-form-urlencoded"
   };
 
-  // todo JWT 토큰이 있다면 Authorization 헤더에 추가
+  // JWT 토큰이 있다면 Authorization 헤더에 추가
+  const token = localStorage.getItem(JWT_HEADER);
+  if (token) {
+    console.log(`send token: ${token}`);
+    headers["Authorization"] = token;
+  }
 
   const options = {
     method: method, headers: headers,

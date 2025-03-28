@@ -41,4 +41,11 @@ public interface TokenService {
 	 * @return 결과
 	 */
 	boolean validation(String token);
+
+	/**
+	 * 토큰에서 이메일 정보 조회
+	 * @param token jwt
+	 * @return email
+	 */
+	String getUserEmail(String token);
 }

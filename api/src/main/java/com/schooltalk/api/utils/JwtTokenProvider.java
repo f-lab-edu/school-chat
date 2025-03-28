@@ -9,14 +9,17 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
  * 이 클래스는 JWT 관련된 유틸 제공을 담당합니다.
  */
+@Slf4j
 @Component
 public class JwtTokenProvider {
+
 	/**
 	 * 시크릿 키
 	 */
@@ -53,10 +56,9 @@ public class JwtTokenProvider {
 	 * 사용자 이메일 추출
 	 *
 	 * @param token JWT 토큰
-	 * @param addedPrefix prefix 포함되어있는지
 	 * @return 사용자 이메일
 	 */
-	public String getUserEmailFromToken(String token, boolean addedPrefix) {
+	public String getUserEmailFromToken(String token) {
 		Optional<Claims> payload = getPayload(token);
 		return payload.map(Claims::getSubject).orElse(null);
 	}
@@ -84,8 +86,10 @@ public class JwtTokenProvider {
 			return Optional.of(Jwts.parser()
 				.verifyWith(SECRET_KEY)
 				.build()
-				.parseSignedClaims(token).getPayload());
+				.parseSignedClaims(token)// 서명 검증
+				.getPayload());
 		} catch (Exception e) {
+			log.error("Error while parsing token. message = {}", e.getMessage());
 			return Optional.empty();
 		}
 	}

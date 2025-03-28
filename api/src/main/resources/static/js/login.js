@@ -1,42 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.querySelector('#btn-login');
   if (loginBtn) {
-    loginBtn.addEventListener('click', handleLogin);
+    loginBtn.addEventListener('click', () => {
+      login();
+    });
   } else {
     console.error("로그인 버튼을 찾을 수 없습니다.");
   }
 });
 
 /**
- * 로그인 버튼 클릭 핸들러
- */
-function handleLogin() {
-  login();
-}
-
-/**
  * 로그인 요청
  * @returns {Promise<void>}
  */
-async function login() {
-  const role = document.querySelector("input[type=radio][name=role]:checked").value;
+function login() {
+  const role = document.querySelector(
+      "input[type=radio][name=role]:checked").value;
   const email = document.querySelector("#email").value;
   const password = document.querySelector("#password").value;
 
-  try {
-    const data ={
-      role: role,
-      email: email,
-      password: password
-    };
+  const data = {
+    role: role, email: email, password: password
+  };
 
-    const token = await apiRequest("/api/v1/auth/login", "POST", data);
-    console.log("Login successful: ", token);
-    // if (token) {
-    //   localStorage.setItem("jwtToken", token);
-    // }
-  } catch (err) {
+  apiRequest("/api/v1/auth/login", "POST", data)
+  .then(token => {
+    console.log(`발급된 JWT token: ${token}`);
+    if (token) {
+      localStorage.setItem(JWT_HEADER, token);
+      console.log(`로그인 성공:: local storage: ${localStorage.getItem(JWT_HEADER)}`);
+    }
+  }).catch(error => {
     alert("로그인에 실패했습니다.");
     console.error("로그인 실패: " + err.message);
-  }
+  });
 }
