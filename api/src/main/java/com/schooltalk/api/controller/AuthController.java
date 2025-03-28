@@ -40,6 +40,7 @@ public class AuthController {
 		log.info("JWT token: {}", jwt);
 		return ResponseEntity.ok(new LoginResponse(jwt));
 	}
+
 	/**
 	 * 로그아웃
 	 *

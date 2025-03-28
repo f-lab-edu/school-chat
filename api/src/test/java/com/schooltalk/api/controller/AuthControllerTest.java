@@ -7,6 +7,7 @@ import com.schooltalk.api.dto.LoginRequest;
 import com.schooltalk.api.service.AuthService;
 import com.schooltalk.core.enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -41,6 +42,7 @@ class AuthControllerTest {
 	}
 
 	@Test
+	@DisplayName("로그인 테스트")
 	public void login() throws Exception {
 		// given
 		LoginRequest request = LoginRequest.builder().email("test@test.com").password("password").role(UserRole.STUDENT).build();
