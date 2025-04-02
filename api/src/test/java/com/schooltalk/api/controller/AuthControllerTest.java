@@ -60,5 +60,6 @@ class AuthControllerTest {
 
 		//then
 		BDDMockito.verify(authService).login(BDDMockito.any());
+		BDDMockito.verify(controller).login(BDDMockito.any());
 	}
 }

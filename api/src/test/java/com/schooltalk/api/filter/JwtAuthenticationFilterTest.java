@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.never;
 import static org.mockito.BDDMockito.verify;
 
 import com.schooltalk.api.service.TokenService;
+import com.schooltalk.core.enums.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
  * 이 클래스는 Jwt 인증 필터의 단위 테스트를 담당합니다.
@@ -31,13 +38,15 @@ class JwtAuthenticationFilterTest {
 	@Mock
 	private TokenService tokenService;
 	@Mock
+	private UserDetailsService userDetailsService;
+	@Mock
 	private FilterChain filterChain;
 
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@BeforeEach
 	void setUp() {
-		jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, requiredAuthUrls);
+		jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userDetailsService, requiredAuthUrls);
 	}
 
 	@Test
@@ -46,21 +55,35 @@ class JwtAuthenticationFilterTest {
 		// Given
 		final String jwt = "Bearer valid token";
 		final String email = "test@test.com";
+		final String role = UserRole.STUDENT.getAuthority();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(TokenService.JWT_AUTH_HEADER, jwt);
 		request.setRequestURI("/api/v1/chat-room");
+		UserDetails userDetails = User
+			.withUsername(email)
+			.password("password")
+			.authorities(role)
+			.build();
 
 		//stub
 		given(tokenService.validation(jwt)).willReturn(true);
 		given(tokenService.getUserEmail(jwt)).willReturn(email);
+		given(userDetailsService.loadUserByUsername(email)).willReturn(userDetails);
 
 		// When
 		jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
 		// Then
 		verify(filterChain).doFilter(request, response);
-		assertThat(request.getAttribute("email")).isEqualTo(email);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		assertThat(authentication).isNotNull();
+		assertThat(authentication.getName()).isEqualTo(email);
+		assertThat(authentication.isAuthenticated()).isTrue();
+		assertThat(authentication.getAuthorities())
+			.extracting(GrantedAuthority::getAuthority)
+			.contains(role);
 	}
 
 	@Test
