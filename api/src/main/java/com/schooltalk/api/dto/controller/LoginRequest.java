@@ -1,4 +1,4 @@
-package com.schooltalk.api.dto;
+package com.schooltalk.api.dto.controller;
 
 import com.schooltalk.core.entity.User;
 import com.schooltalk.core.enums.UserRole;

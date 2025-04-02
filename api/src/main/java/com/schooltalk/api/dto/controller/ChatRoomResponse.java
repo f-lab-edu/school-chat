@@ -1,4 +1,4 @@
-package com.schooltalk.api.dto;
+package com.schooltalk.api.dto.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.schooltalk.api.controller;
 
-import com.schooltalk.api.dto.ChatRoomResponse;
+import com.schooltalk.api.dto.controller.ChatRoomResponse;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
