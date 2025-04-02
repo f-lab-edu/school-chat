@@ -26,13 +26,13 @@ public class JwtTokenProvider {
 	 */
 	private final SecretKey SECRET_KEY;
 	/**
-	 * JWT 유효 시간
+	 * JWT 유효 시간,  단위: 밀리초(ms)
 	 */
-	private final long EXPIRATION_TIME;
+	private final long EXPIRATION_TIME_MILLIS;
 
-	public JwtTokenProvider(@Value("${jwt.password}") String password, @Value("${jwt.expiration-time}") long expirationTime) {
+	public JwtTokenProvider(@Value("${jwt.password}") String password, @Value("${jwt.expiration-millis}") long expirationTime) {
 		this.SECRET_KEY = Keys.hmacShaKeyFor(password.getBytes(StandardCharsets.UTF_8));
-		this.EXPIRATION_TIME = expirationTime;
+		this.EXPIRATION_TIME_MILLIS = expirationTime;
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class JwtTokenProvider {
 	 */
 	public String generateToken(User userInfo) {
 		Instant now = Instant.now();
-		Instant expirationTime = now.plusMillis(EXPIRATION_TIME);
+		Instant expirationTime = now.plusMillis(EXPIRATION_TIME_MILLIS);
 
 		return Jwts.builder()
 			.subject(userInfo.getEmail())
