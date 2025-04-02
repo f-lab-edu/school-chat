@@ -53,7 +53,12 @@ public class User {
 	private String email;
 
 	/**
-	 * 유저 비밀번호
+	 * 유저 비밀번호, 암호화 전
+	 */
+	private String password;
+
+	/**
+	 * 유저 비밀번호, 암호화 후
 	 */
 	@Column(name = "password_enc", nullable = false, length = 200)
 	private String passwordEnc;

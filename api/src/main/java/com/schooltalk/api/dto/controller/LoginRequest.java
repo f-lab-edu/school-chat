@@ -38,6 +38,6 @@ public class LoginRequest {
 	 * @return User entity
 	 */
 	public User toUser() {
-		return User.builder().email(email).passwordEnc(password).role(role).build();
+		return User.builder().email(email).password(password).role(role).build();
 	}
 }
