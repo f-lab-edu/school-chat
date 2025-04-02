@@ -1,5 +1,6 @@
 package com.schooltalk.api.repository;
 
+import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,8 +20,13 @@ public class JwtRepository {
 		this.redisTemplate = redisTemplate;
 	}
 
-	public void logout(String token) {
-		redisTemplate.opsForValue().set(token, STATUS_LOGOUT);
+	/**
+	 * 로그아웃된 JWT 토큰을 저장합니다.
+	 * @param token jwt
+	 * @param ttlMillis Repository에 저장할 시간(jwt의 남은 유효시간)
+	 */
+	public void logout(String token, long ttlMillis) {
+		redisTemplate.opsForValue().set(token, STATUS_LOGOUT, ttlMillis, TimeUnit.MILLISECONDS);
 	}
 
 	public boolean isLoggedOut(String token) {

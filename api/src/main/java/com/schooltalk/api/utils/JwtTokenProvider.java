@@ -68,20 +68,20 @@ public class JwtTokenProvider {
 	}
 
 	/**
-	 * 만료시간 추출
+	 * 만료시간까지 남은 시간, 단위 ms
 	 *
 	 * @param token JWT 토큰
-	 * @return 만료시간
+	 * @return 만료까지 남은 시간
 	 */
-	public long getExpiration(String token) {
+	public long getExpiresInMillis(String token) {
 		Optional<Claims> payload = getPayload(token);
 
-		Date expiration = payload.map(Claims::getExpiration).orElse(null);
-		if (expiration == null) {
-			log.error("No expiration time found for token {}", token);
-			throw new IllegalArgumentException("expiration must not be null");
+		Date expirationTime = payload.map(Claims::getExpiration).orElse(null);
+		if (expirationTime == null) {
+			log.error("No expirationTime time found for token {}", token);
+			throw new IllegalArgumentException("expirationTime must not be null");
 		}
-		return Duration.between(Instant.now(), expiration.toInstant()).toMillis();
+		return Duration.between(Instant.now(), expirationTime.toInstant()).toMillis();
 	}
 
 	/**

@@ -32,7 +32,9 @@ public class TokenServiceImpl implements TokenService {
 		if (hasPrefix(token)) {
 			token = token.substring(JWT_PREFIX.length());
 		}
-		jwtRepository.logout(token);
+		long expiresInMillis = jwtTokenProvider.getExpiresInMillis(token);
+
+		jwtRepository.logout(token, expiresInMillis);
 	}
 
 	@Override
