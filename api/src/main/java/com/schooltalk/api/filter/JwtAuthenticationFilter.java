@@ -36,15 +36,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
-		log.info("JwtAuthenticationFilter ::: start");
+		log.debug("JwtAuthenticationFilter ::: start");
 
 		// 토큰 추출
 		String jwt = request.getHeader(TokenService.JWT_AUTH_HEADER);
-		log.info("JwtAuthenticationFilter ::: token: [{}]", jwt);
+		log.debug("JwtAuthenticationFilter ::: token: [{}]", jwt);
 
 		// 토큰 유효성 검증
 		if (!StringUtils.hasText(jwt) || !tokenService.validation(jwt)) {
-			log.error("JwtAuthenticationFilter ::: not a valid token");
+			log.error("JwtAuthenticationFilter ::: not a valid token, token: {}", jwt);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
 			response.getWriter().write("{\"error\":\"invalid_token\"}");
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String email = tokenService.getUserEmail(jwt);
 		request.setAttribute("email", email);
-		log.info("JwtAuthenticationFilter ::: user email: {}", email);
+		log.debug("JwtAuthenticationFilter ::: user email: {}", email);
 
 		filterChain.doFilter(request, response);
 	}
@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		log.info("shouldNotFilter ::: start uri: {}", request.getRequestURI());
+		log.debug("shouldNotFilter ::: start uri: {}", request.getRequestURI());
 		return !isRequiredAuthUrl(request.getRequestURI());
 	}
 }
