@@ -1,6 +1,7 @@
 package com.schooltalk.api.service;
 
 import com.schooltalk.api.dto.controller.LoginRequest;
+import com.schooltalk.core.entity.User;
 
 /**
  * 이 클래스는 인증 관련 서비스를 담당합니다.
@@ -8,10 +9,10 @@ import com.schooltalk.api.dto.controller.LoginRequest;
 public interface AuthService {
 	/**
 	 * 로그인 처리
-	 * @param request 로그인 정보
+	 * @param user 로그인 정보
 	 * @return JTW 토큰
 	 */
-	String login(LoginRequest request);
+	String login(User user);
 
 	/**
 	 * JWT 유효성
