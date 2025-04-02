@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -23,9 +24,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 class ChatControllerTest {
 
-	private List<String> requiredAuthUrls = Arrays.asList("/api/v1/chat-room", "/api/v1/chat-room/*");
+	private List<String> notRequiredAuthUrls = Arrays.asList("/api/v1/login");
 	@Mock
 	private TokenService tokenService;
+	@Mock
+	private UserDetailsService userDetailsService;
 	@InjectMocks
 	private ChatController controller;
 
@@ -35,7 +38,7 @@ class ChatControllerTest {
 	public void initMockMvc() {
 		mockMvc = MockMvcBuilders
 			.standaloneSetup(controller)
-			.addFilter(new JwtAuthenticationFilter(tokenService, requiredAuthUrls))
+			.addFilter(new JwtAuthenticationFilter(tokenService,userDetailsService ,  notRequiredAuthUrls))
 			.build();
 
 	}

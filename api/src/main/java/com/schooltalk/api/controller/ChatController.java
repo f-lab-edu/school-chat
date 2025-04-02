@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatController {
 
 	@GetMapping
-	public ResponseEntity<List<ChatRoomResponse>> getChatRooms() {
+	public ResponseEntity<List<ChatRoomResponse>> getChatRooms(Authentication authentication) {
 		// todo 실제 채팅방 조회 로직으로 변경
 		List<ChatRoomResponse> responses = new ArrayList<>();
 

@@ -4,9 +4,16 @@ import com.schooltalk.api.filter.JwtAuthenticationFilter;
 import com.schooltalk.api.service.TokenService;
 import java.util.Arrays;
 import java.util.List;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -15,20 +22,46 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
-	private final TokenService tokenService;
+	/**
+	 * 인증 인가가 필요하지 않은 URL
+	 */
+	private final List<String> notRequiredAuthUrls = Arrays.asList(
+		"/api/v1/auth/login"
+	);
 
-	public SecurityConfig(TokenService tokenService) {
+	private final TokenService tokenService;
+	private final UserDetailsService userDetailsService;
+
+	public SecurityConfig(TokenService tokenService, UserDetailsService userDetailsService) {
 		this.tokenService = tokenService;
+		this.userDetailsService = userDetailsService;
+	}
+
+
+	@Bean
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+		return new JwtAuthenticationFilter(tokenService, userDetailsService, notRequiredAuthUrls);
 	}
 
 	@Bean
-	public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() {
-		List<String> requiredAuthUrls = Arrays.asList("/api/v1/chat-room", "/api/v1/chat-room/**");
-
-		FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new JwtAuthenticationFilter(tokenService, requiredAuthUrls));
-		registrationBean.addUrlPatterns("*"); //filter 동작 url todo security를 이용해 특정 url(로그인 등) 제외 후 전부로 등록
-		registrationBean.setOrder(1);
-		return registrationBean;
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+			.authorizeHttpRequests((authorize) -> {
+				notRequiredAuthUrls.forEach(url -> authorize.requestMatchers(url).permitAll());
+				authorize.anyRequest().authenticated();
+				}
+			)
+			.csrf((csrf) -> {
+				notRequiredAuthUrls.forEach(csrf::ignoringRequestMatchers);
+			})
+			.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
+			.formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 사용하지 않음
+			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
+			.exceptionHandling((exceptions) -> exceptions
+				.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+				.accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+			).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // jwt 필터를 추가
+		return http.build();
 	}
+
 }

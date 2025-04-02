@@ -19,5 +19,9 @@ public enum UserRole {
 	/**
 	 * 학부모
 	 */
-	PARENT
+	PARENT;
+
+	public String getAuthority() {
+		return "ROLE_" + this.name();
+	}
 }

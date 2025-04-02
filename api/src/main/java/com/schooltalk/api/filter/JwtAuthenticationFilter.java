@@ -8,6 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,18 +23,20 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	/**
-	 * JWT 토큰 기반으로 확인해야하는 URL
+	 * JWT 토큰 기반으로 확인하지 않을 URL
 	 */
-	private final List<String> requiredAuthUrls;
+	private final List<String> notRequiredAuthUrls;
 
 	private final TokenService tokenService;
+	private final UserDetailsService userDetailsService;
 
 	private final AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
 
 
-	public JwtAuthenticationFilter(TokenService tokenService, List<String> requiredAuthUrls) {
+	public JwtAuthenticationFilter(TokenService tokenService, UserDetailsService userDetailsService, List<String> notRequiredAuthUrls) {
 		this.tokenService = tokenService;
-		this.requiredAuthUrls = requiredAuthUrls;
+		this.notRequiredAuthUrls = notRequiredAuthUrls;
+		this.userDetailsService = userDetailsService;
 	}
 
 	@Override
@@ -45,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		// 토큰 유효성 검증
 		if (!StringUtils.hasText(jwt) || !tokenService.validation(jwt)) {
 			log.error("JwtAuthenticationFilter ::: not a valid token, token: {}", jwt);
+			SecurityContextHolder.clearContext();
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
 			response.getWriter().write("{\"error\":\"invalid_token\"}");
@@ -52,20 +59,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		String email = tokenService.getUserEmail(jwt);
-		request.setAttribute("email", email);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+		UsernamePasswordAuthenticationToken authentication =
+			new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 		log.debug("JwtAuthenticationFilter ::: user email: {}", email);
 
 		filterChain.doFilter(request, response);
 	}
 
-	private boolean isRequiredAuthUrl(String requestUri) {
-		return requiredAuthUrls != null && requiredAuthUrls.stream()
+	private boolean isNotRequiredAuthUrl(String requestUri) {
+		return notRequiredAuthUrls != null && notRequiredAuthUrls.stream()
 			.anyMatch(pattern -> pathMatcher.match(pattern, requestUri));
 	}
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		log.debug("shouldNotFilter ::: start uri: {}", request.getRequestURI());
-		return !isRequiredAuthUrl(request.getRequestURI());
+		return isNotRequiredAuthUrl(request.getRequestURI());
 	}
 }
