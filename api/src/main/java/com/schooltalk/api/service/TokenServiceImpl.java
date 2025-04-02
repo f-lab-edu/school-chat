@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * 이 클래스는 토큰 서비스의 구현을 담당합니다.
+ * 이 클래스는 토큰 서비스의 JWT 방식으로 한 구현을 담당합니다.
  */
 @Slf4j
 @Service
