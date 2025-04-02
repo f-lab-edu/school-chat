@@ -38,11 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		throws ServletException, IOException {
 		log.info("JwtAuthenticationFilter ::: start");
 
-		if (!isRequiredAuthUrl(request.getRequestURI())) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
 		// 토큰 추출
 		String jwt = request.getHeader(TokenService.JWT_AUTH_HEADER);
 		log.info("JwtAuthenticationFilter ::: token: [{}]", jwt);
