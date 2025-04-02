@@ -5,8 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
@@ -41,13 +42,16 @@ public class JwtTokenProvider {
 	 * @return JWT 토큰
 	 */
 	public String generateToken(User userInfo) {
+		Instant now = Instant.now();
+		Instant expirationTime = now.plusMillis(EXPIRATION_TIME);
+
 		return Jwts.builder()
 			.subject(userInfo.getEmail())
 			.claim("email", userInfo.getEmail())
 			.claim("role", userInfo.getRole())
 			.claim("username", userInfo.getName())
-			.issuedAt(new Date())
-			.expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+			.issuedAt(Date.from(now))
+			.expiration(Date.from(expirationTime))
 			.signWith(SECRET_KEY)
 			.compact();
 	}
@@ -71,8 +75,13 @@ public class JwtTokenProvider {
 	 */
 	public long getExpiration(String token) {
 		Optional<Claims> payload = getPayload(token);
+
 		Date expiration = payload.map(Claims::getExpiration).orElse(null);
-		return Objects.requireNonNull(expiration).getTime() - System.currentTimeMillis();
+		if (expiration == null) {
+			log.error("No expiration time found for token {}", token);
+			throw new IllegalArgumentException("expiration must not be null");
+		}
+		return Duration.between(Instant.now(), expiration.toInstant()).toMillis();
 	}
 
 	/**
@@ -102,6 +111,6 @@ public class JwtTokenProvider {
 	 */
 	public boolean validateToken(String token) {
 		Optional<Claims> payload = getPayload(token);
-		return payload.filter(value -> !value.getExpiration().before(new Date())).isPresent();
+		return payload.filter(value -> !value.getExpiration().before(Date.from(Instant.now()))).isPresent();
 	}
 }
