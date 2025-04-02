@@ -1,7 +1,7 @@
 package com.schooltalk.api.controller;
 
-import com.schooltalk.api.dto.LoginRequest;
-import com.schooltalk.api.dto.LoginResponse;
+import com.schooltalk.api.dto.controller.LoginRequest;
+import com.schooltalk.api.dto.controller.LoginResponse;
 import com.schooltalk.api.service.AuthService;
 import com.schooltalk.api.service.TokenService;
 import lombok.extern.slf4j.Slf4j;

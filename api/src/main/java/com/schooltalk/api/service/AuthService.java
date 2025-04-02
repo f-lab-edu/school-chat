@@ -1,6 +1,6 @@
 package com.schooltalk.api.service;
 
-import com.schooltalk.api.dto.LoginRequest;
+import com.schooltalk.api.dto.controller.LoginRequest;
 
 /**
  * 이 클래스는 인증 관련 서비스를 담당합니다.

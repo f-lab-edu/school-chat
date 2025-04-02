@@ -3,7 +3,7 @@ package com.schooltalk.api.controller;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.schooltalk.api.dto.LoginRequest;
+import com.schooltalk.api.dto.controller.LoginRequest;
 import com.schooltalk.api.service.AuthService;
 import com.schooltalk.core.enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;

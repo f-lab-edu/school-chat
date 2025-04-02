@@ -1,6 +1,6 @@
 package com.schooltalk.api.service;
 
-import com.schooltalk.api.dto.LoginRequest;
+import com.schooltalk.api.dto.controller.LoginRequest;
 import com.schooltalk.core.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
