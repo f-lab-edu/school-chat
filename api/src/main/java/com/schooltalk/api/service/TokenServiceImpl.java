@@ -22,39 +22,23 @@ public class TokenServiceImpl implements TokenService {
 	}
 
 	@Override
-	public String generateToken(User userInfo, boolean addPrefix) {
-		String token = jwtTokenProvider.generateToken(userInfo);
-		return addPrefix ? JWT_PREFIX + token : token;
+	public String generateToken(User userInfo) {
+		return jwtTokenProvider.generateToken(userInfo);
 	}
 
 	@Override
 	public void logout(String token) {
-		if (hasPrefix(token)) {
-			token = token.substring(JWT_PREFIX.length());
-		}
 		long expiresInMillis = jwtTokenProvider.getExpiresInMillis(token);
-
 		jwtRepository.logout(token, expiresInMillis);
 	}
 
 	@Override
 	public boolean validation(String token) {
-		if (hasPrefix(token)) {
-			token = token.substring(JWT_PREFIX.length());
-		}
-
 		return jwtTokenProvider.validateToken(token) && !jwtRepository.isLoggedOut(token);
 	}
 
 	@Override
 	public String getUserEmail(String token) {
-		if (hasPrefix(token)) {
-			token = token.substring(JWT_PREFIX.length());
-		}
 		return jwtTokenProvider.getUserEmailFromToken(token);
-	}
-
-	private boolean hasPrefix(String token) {;
-		return token.startsWith(JWT_PREFIX);
 	}
 }

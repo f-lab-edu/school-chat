@@ -41,7 +41,7 @@ class TokenServiceTest {
 		BDDMockito.given(jwtTokenProvider.generateToken(user)).willReturn(token);
 
 		// when
-		String generateToken = tokenService.generateToken(user, false);
+		String generateToken = tokenService.generateToken(user);
 
 		// then
 		assertThat(generateToken).isEqualTo(token);

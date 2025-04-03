@@ -1,5 +1,6 @@
 package com.schooltalk.api.filter;
 
+import static com.schooltalk.api.filter.JwtAuthenticationFilter.JWT_AUTH_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.never;
@@ -58,7 +59,7 @@ class JwtAuthenticationFilterTest {
 		final String role = UserRole.STUDENT.getAuthority();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(TokenService.JWT_AUTH_HEADER, jwt);
+		request.addHeader(JWT_AUTH_HEADER, jwt);
 		request.setRequestURI("/api/v1/chat-room");
 		UserDetails userDetails = User
 			.withUsername(email)
@@ -93,7 +94,7 @@ class JwtAuthenticationFilterTest {
 		String jwt = "Bearer invalid token";
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(TokenService.JWT_AUTH_HEADER, jwt);
+		request.addHeader(JWT_AUTH_HEADER, jwt);
 		request.setRequestURI("/api/v1/chat-room");
 
 		//stub
@@ -132,7 +133,7 @@ class JwtAuthenticationFilterTest {
 		String jwt = "  ";
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(TokenService.JWT_AUTH_HEADER, jwt);
+		request.addHeader(JWT_AUTH_HEADER, jwt);
 		request.setRequestURI("/api/v1/chat-room");
 
 		// When
