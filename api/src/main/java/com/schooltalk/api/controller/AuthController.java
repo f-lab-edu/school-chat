@@ -2,6 +2,7 @@ package com.schooltalk.api.controller;
 
 import static com.schooltalk.api.filter.JwtAuthenticationFilter.JWT_AUTH_HEADER;
 
+import com.schooltalk.api.constants.UrlPath.Auth;
 import com.schooltalk.api.dto.controller.LoginRequest;
 import com.schooltalk.api.dto.controller.LoginResponse;
 import com.schooltalk.api.service.AuthService;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 이 클래스는 인증의 컨트롤러를 담당합니다.
  */
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(Auth.ROOT)
 @Slf4j
 public class AuthController {
 
@@ -34,7 +35,7 @@ public class AuthController {
 	 * @param loginRequest 유저 역할
 	 * @return JWT 발급
 	 */
-	@PostMapping("/login")
+	@PostMapping(Auth.LOGIN)
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
 		log.info("Login request: {}", loginRequest);
 		String jwt = authService.login(loginRequest.toUser());
@@ -47,7 +48,7 @@ public class AuthController {
 	 *
 	 * @param token JWT
 	 */
-	@PostMapping("/logout")
+	@PostMapping(Auth.LOGOUT)
 	@ResponseBody
 	public ResponseEntity<?> logout(@RequestHeader(JWT_AUTH_HEADER) String token) {
 		log.info("Logout request: {}", token);

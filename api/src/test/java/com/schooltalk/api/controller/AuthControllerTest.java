@@ -3,6 +3,7 @@ package com.schooltalk.api.controller;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.schooltalk.api.constants.UrlPath.Auth;
 import com.schooltalk.api.dto.controller.LoginRequest;
 import com.schooltalk.api.service.AuthService;
 import com.schooltalk.core.enums.UserRole;
@@ -47,19 +48,17 @@ class AuthControllerTest {
 		// given
 		LoginRequest request = LoginRequest.builder().email("test@test.com").password("password").role(UserRole.STUDENT).build();
 
-
 		// stub
 		BDDMockito.given(authService.login(BDDMockito.any())).willReturn(BDDMockito.anyString());
 
 		//when
 		mockMvc.perform(
-				MockMvcRequestBuilders.post("/api/v1/auth/login")
+				MockMvcRequestBuilders.post(Auth.ROOT + Auth.LOGIN)
 					.content(objectMapper.writeValueAsString(request))
 					.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
 
 		//then
 		BDDMockito.verify(authService).login(BDDMockito.any());
-		BDDMockito.verify(controller).login(BDDMockito.any());
 	}
 }

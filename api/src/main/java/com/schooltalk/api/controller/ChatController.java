@@ -1,5 +1,6 @@
 package com.schooltalk.api.controller;
 
+import com.schooltalk.api.constants.UrlPath.ChatRoom;
 import com.schooltalk.api.dto.controller.ChatRoomResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/chat-room")
+@RequestMapping(ChatRoom.ROOT)
 public class ChatController {
 
 	@GetMapping

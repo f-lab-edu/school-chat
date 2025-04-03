@@ -1,12 +1,13 @@
 package com.schooltalk.api.filter;
 
+import static com.schooltalk.api.constants.UrlPath.NOT_REQUIRED_AUTH_URLS;
+
 import com.schooltalk.api.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,20 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 */
 	public static final String JWT_AUTH_HEADER = "Authorization";
 
-	/**
-	 * JWT 토큰 기반으로 확인하지 않을 URL
-	 */
-	private final List<String> notRequiredAuthUrls;
-
 	private final TokenService tokenService;
 	private final UserDetailsService userDetailsService;
 
 	private final AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
 
 
-	public JwtAuthenticationFilter(TokenService tokenService, UserDetailsService userDetailsService, List<String> notRequiredAuthUrls) {
+	public JwtAuthenticationFilter(TokenService tokenService, UserDetailsService userDetailsService) {
 		this.tokenService = tokenService;
-		this.notRequiredAuthUrls = notRequiredAuthUrls;
 		this.userDetailsService = userDetailsService;
 	}
 
@@ -58,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		// 토큰 추출
 		String authorizationHeader = request.getHeader(JWT_AUTH_HEADER);
-		if (authorizationHeader == null|| !authorizationHeader.startsWith(JWT_PREFIX)) {
+		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_PREFIX)) {
 			log.debug("JwtAuthenticationFilter ::: authorizationHeader not exist : {}", authorizationHeader);
 			failAuthentication();
 		}
@@ -82,13 +77,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		filterChain.doFilter(request, response);
 	}
+
 	private void failAuthentication() {
 		SecurityContextHolder.clearContext();
 		throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰의 정보가 잘못되었습니다.");
 	}
 
 	private boolean isNotRequiredAuthUrl(String requestUri) {
-		return notRequiredAuthUrls != null && notRequiredAuthUrls.stream()
+		return NOT_REQUIRED_AUTH_URLS != null && NOT_REQUIRED_AUTH_URLS.stream()
 			.anyMatch(pattern -> pathMatcher.match(pattern, requestUri));
 	}
 

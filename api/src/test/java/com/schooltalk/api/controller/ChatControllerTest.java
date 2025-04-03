@@ -3,10 +3,9 @@ package com.schooltalk.api.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.schooltalk.api.constants.UrlPath.ChatRoom;
 import com.schooltalk.api.filter.JwtAuthenticationFilter;
 import com.schooltalk.api.service.TokenService;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 class ChatControllerTest {
 
-	private List<String> notRequiredAuthUrls = Arrays.asList("/api/v1/login");
 	@Mock
 	private TokenService tokenService;
 	@Mock
@@ -38,7 +36,7 @@ class ChatControllerTest {
 	public void initMockMvc() {
 		mockMvc = MockMvcBuilders
 			.standaloneSetup(controller)
-			.addFilter(new JwtAuthenticationFilter(tokenService,userDetailsService ,  notRequiredAuthUrls))
+			.addFilter(new JwtAuthenticationFilter(tokenService,userDetailsService))
 			.build();
 
 	}
@@ -46,11 +44,9 @@ class ChatControllerTest {
 	@Test
 	@DisplayName("JWT 필터가 동작")
 	void shouldFilterProtectedUrl() throws Exception {
-		// Given
-		String doFilterUrl = "/api/v1/chat-room";
 
 		// When & Then
-		mockMvc.perform(get(doFilterUrl))
+		mockMvc.perform(get(ChatRoom.ROOT))
 			.andExpect(status().isUnauthorized());
 	}
 
