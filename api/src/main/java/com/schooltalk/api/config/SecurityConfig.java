@@ -1,9 +1,9 @@
 package com.schooltalk.api.config;
 
+import static com.schooltalk.api.constants.UrlPath.NOT_REQUIRED_AUTH_URLS;
+
 import com.schooltalk.api.filter.JwtAuthenticationFilter;
 import com.schooltalk.api.service.TokenService;
-import java.util.Arrays;
-import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,13 +24,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
-	/**
-	 * 인증 인가가 필요하지 않은 URL
-	 */
-	private final List<String> notRequiredAuthUrls = Arrays.asList(
-		"/api/v1/auth/login"
-	);
-
 	private final TokenService tokenService;
 	private final UserDetailsService userDetailsService;
 
@@ -46,19 +39,19 @@ public class SecurityConfig implements WebMvcConfigurer {
 
 	@Bean
 	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(tokenService, userDetailsService, notRequiredAuthUrls);
+		return new JwtAuthenticationFilter(tokenService, userDetailsService);
 	}
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 			.authorizeHttpRequests((authorize) -> {
-				notRequiredAuthUrls.forEach(url -> authorize.requestMatchers(url).permitAll());
+				NOT_REQUIRED_AUTH_URLS.forEach(url -> authorize.requestMatchers(url).permitAll());
 				authorize.anyRequest().authenticated();
 				}
 			)
 			.csrf((csrf) -> {
-				notRequiredAuthUrls.forEach(csrf::ignoringRequestMatchers);
+				NOT_REQUIRED_AUTH_URLS.forEach(csrf::ignoringRequestMatchers);
 			})
 			.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
 			.formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 사용하지 않음

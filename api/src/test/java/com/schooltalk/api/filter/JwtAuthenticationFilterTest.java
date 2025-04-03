@@ -6,19 +6,19 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.never;
 import static org.mockito.BDDMockito.verify;
 
+import com.schooltalk.api.constants.UrlPath.ChatRoom;
 import com.schooltalk.api.service.TokenService;
 import com.schooltalk.core.enums.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -35,7 +35,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 class JwtAuthenticationFilterTest {
 
 
-	private List<String> requiredAuthUrls = List.of("/**");
 	@Mock
 	private TokenService tokenService;
 	@Mock
@@ -47,20 +46,21 @@ class JwtAuthenticationFilterTest {
 
 	@BeforeEach
 	void setUp() {
-		jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userDetailsService, requiredAuthUrls);
+		jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenService, userDetailsService);
 	}
 
 	@Test
 	@DisplayName("JWT 필터 테스트 - 성공")
 	void filterValidToken() throws ServletException, IOException {
 		// Given
-		final String jwt = "Bearer valid token";
+		String jwt = "invalid token";
+		String header = "Bearer " + jwt;
 		final String email = "test@test.com";
 		final String role = UserRole.STUDENT.getAuthority();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(JWT_AUTH_HEADER, jwt);
-		request.setRequestURI("/api/v1/chat-room");
+		request.addHeader(JWT_AUTH_HEADER, header);
+		request.setRequestURI(ChatRoom.ROOT);
 		UserDetails userDetails = User
 			.withUsername(email)
 			.password("password")
@@ -91,11 +91,12 @@ class JwtAuthenticationFilterTest {
 	@DisplayName("JWT 필터 테스트 - 실패(잘못된 토큰)")
 	void filterInvalidToken() throws ServletException, IOException {
 		// Given
-		String jwt = "Bearer invalid token";
+		String jwt = "invalid token";
+		String header = "Bearer " + jwt;
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addHeader(JWT_AUTH_HEADER, jwt);
-		request.setRequestURI("/api/v1/chat-room");
+		request.addHeader(JWT_AUTH_HEADER, header);
+		request.setRequestURI(ChatRoom.ROOT);
 
 		//stub
 		given(tokenService.validation(jwt)).willReturn(false);
@@ -105,8 +106,8 @@ class JwtAuthenticationFilterTest {
 
 		// Then
 		verify(filterChain, never()).doFilter(request, response);
-		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
-		assertThat(response.getContentAsString()).contains("invalid_token");
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getContentAsString()).contains("토큰이 없거나 유효하지 않습니다.");
 	}
 
 	@Test
@@ -115,15 +116,15 @@ class JwtAuthenticationFilterTest {
 		// Give
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setRequestURI("/api/v1/chat-room");
+		request.setRequestURI(ChatRoom.ROOT);
 
 		// When
 		jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
 		// Then
 		verify(filterChain, never()).doFilter(request, response);
-		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
-		assertThat(response.getContentAsString()).contains("invalid_token");
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getContentAsString()).contains("토큰이 없거나 유효하지 않습니다.");
 	}
 
 	@Test
@@ -134,14 +135,14 @@ class JwtAuthenticationFilterTest {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addHeader(JWT_AUTH_HEADER, jwt);
-		request.setRequestURI("/api/v1/chat-room");
+		request.setRequestURI(ChatRoom.ROOT);
 
 		// When
 		jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
 		// Then
 		verify(filterChain, never()).doFilter(request, response);
-		assertThat(response.getStatus()).isEqualTo(HttpServletResponse.SC_UNAUTHORIZED);
-		assertThat(response.getContentAsString()).contains("invalid_token");
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+		assertThat(response.getContentAsString()).contains("토큰이 없거나 유효하지 않습니다.");
 	}
 }
