@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
 		User findUser = userByEmail.get();
 
-		if (findUser.getRole().equals(user.getRole())) {
+		if (findUser.getRole() != user.getRole()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원정보가 다릅니다.");
 		}
 
