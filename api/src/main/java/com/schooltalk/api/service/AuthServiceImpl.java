@@ -31,17 +31,17 @@ public class AuthServiceImpl implements AuthService {
 	public String login(User user) {
 		Optional<User> userByEmail = userRepository.findByEmail(user.getEmail());
 		if (userByEmail.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 회원정보가 존재하지 않습니다.");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 회원정보가 존재하지 않습니다.");
 		}
 
 		User findUser = userByEmail.get();
 
 		if (findUser.getRole() != user.getRole()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원정보가 다릅니다.");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "회원정보가 다릅니다.");
 		}
 
 		if (!passwordEncoder.matches(user.getPassword(), findUser.getPasswordEnc())) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원정보가 다릅니다.");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "회원정보가 다릅니다.");
 		}
 
 		// JWT 토큰발급
