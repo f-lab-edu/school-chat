@@ -1,9 +1,10 @@
 package com.schooltalk.api.controller;
 
+import static com.schooltalk.api.filter.JwtAuthenticationFilter.JWT_AUTH_HEADER;
+
 import com.schooltalk.api.dto.controller.LoginRequest;
 import com.schooltalk.api.dto.controller.LoginResponse;
 import com.schooltalk.api.service.AuthService;
-import com.schooltalk.api.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +49,7 @@ public class AuthController {
 	 */
 	@PostMapping("/logout")
 	@ResponseBody
-	public ResponseEntity<?> logout(@RequestHeader(TokenService.JWT_AUTH_HEADER) String token) {
+	public ResponseEntity<?> logout(@RequestHeader(JWT_AUTH_HEADER) String token) {
 		log.info("Logout request: {}", token);
 		authService.logout(token);
 		return ResponseEntity.ok(null);
