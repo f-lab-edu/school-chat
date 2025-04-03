@@ -2,12 +2,15 @@ package com.schooltalk.api.filter;
 
 import static com.schooltalk.api.constants.UrlPath.NOT_REQUIRED_AUTH_URLS;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schooltalk.api.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * 이 클래스는 JWT 토큰으로 검증하는 필터를 담당합니다.
@@ -55,7 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader(JWT_AUTH_HEADER);
 		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_PREFIX)) {
 			log.debug("JwtAuthenticationFilter ::: authorizationHeader not exist : {}", authorizationHeader);
-			failAuthentication();
+			failAuthentication(response);
+			return;
 		}
 
 		String jwt = authorizationHeader.replace(JWT_PREFIX, "");
@@ -64,7 +67,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		// 토큰 유효성 검증
 		if (!StringUtils.hasText(jwt) || !tokenService.validation(jwt)) {
 			log.debug("JwtAuthenticationFilter ::: not a valid token, token: {}", jwt);
-			failAuthentication();
+			failAuthentication(response);
+			return;
 		}
 
 		String email = tokenService.getUserEmail(jwt);
@@ -78,9 +82,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private void failAuthentication() {
+	private void failAuthentication(HttpServletResponse response) throws IOException {
 		SecurityContextHolder.clearContext();
-		throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰의 정보가 잘못되었습니다.");
+
+		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		response.setContentType("application/json; charset=UTF-8");
+
+		Map<String, Object> errorBody = new HashMap<>();
+		errorBody.put("error", "UNAUTHORIZED");
+		errorBody.put("message", "토큰이 없거나 유효하지 않습니다.");
+		errorBody.put("status", HttpStatus.UNAUTHORIZED.value());
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		String json = objectMapper.writeValueAsString(errorBody);
+
+		response.getWriter().write(json);
+		response.getWriter().flush();
 	}
 
 	private boolean isNotRequiredAuthUrl(String requestUri) {
