@@ -1,6 +1,7 @@
 package com.schooltalk.api.controller;
 
 import static com.schooltalk.api.filter.JwtAuthenticationFilter.JWT_AUTH_HEADER;
+import static com.schooltalk.api.filter.JwtAuthenticationFilter.JWT_PREFIX;
 
 import com.schooltalk.api.constants.UrlPath.Auth;
 import com.schooltalk.api.dto.controller.LoginRequest;
@@ -52,7 +53,7 @@ public class AuthController {
 	@ResponseBody
 	public ResponseEntity<?> logout(@RequestHeader(JWT_AUTH_HEADER) String token) {
 		log.info("Logout request: {}", token);
-		authService.logout(token);
+		authService.logout(token.replace(JWT_PREFIX, "").trim());
 		return ResponseEntity.ok(null);
 	}
 }
