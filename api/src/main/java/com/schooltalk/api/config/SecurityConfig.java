@@ -4,6 +4,7 @@ import static com.schooltalk.api.constants.UrlPath.NOT_REQUIRED_AUTH_URLS;
 
 import com.schooltalk.api.filter.JwtAuthenticationFilter;
 import com.schooltalk.api.service.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 이 클래스는 security 설정을 담당합니다.
  */
 @Configuration
+@Slf4j
 public class SecurityConfig implements WebMvcConfigurer {
 
 	private final TokenService tokenService;
@@ -46,11 +48,13 @@ public class SecurityConfig implements WebMvcConfigurer {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 			.authorizeHttpRequests((authorize) -> {
+				log.info("ignore authorize request URL : {}", NOT_REQUIRED_AUTH_URLS);
 				NOT_REQUIRED_AUTH_URLS.forEach(url -> authorize.requestMatchers(url).permitAll());
 				authorize.anyRequest().authenticated();
 				}
 			)
 			.csrf((csrf) -> {
+				log.info("ignore CSRF request URL : {}", NOT_REQUIRED_AUTH_URLS);
 				NOT_REQUIRED_AUTH_URLS.forEach(csrf::ignoringRequestMatchers);
 			})
 			.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
