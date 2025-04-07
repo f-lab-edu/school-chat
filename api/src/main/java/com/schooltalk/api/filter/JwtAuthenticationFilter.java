@@ -39,7 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final TokenService tokenService;
 	private final UserDetailsService userDetailsService;
-
 	private final AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
 
 
@@ -51,22 +50,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws ServletException, IOException {
-		log.debug("JwtAuthenticationFilter ::: start");
+		log.debug("doFilterInternal::: start");
 
 		// 토큰 추출
 		String authorizationHeader = request.getHeader(JWT_AUTH_HEADER);
 		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_PREFIX)) {
-			log.debug("JwtAuthenticationFilter ::: authorizationHeader not exist : {}", authorizationHeader);
+			log.debug("doFilterInternal::: authorizationHeader not exist : {}", authorizationHeader);
 			failAuthentication(response);
 			return;
 		}
 
 		String jwt = authorizationHeader.replace(JWT_PREFIX, "");
-		log.debug("JwtAuthenticationFilter ::: token: [{}]", jwt);
+		log.debug("doFilterInternal::: token: [{}]", jwt);
 
 		// 토큰 유효성 검증
 		if (!StringUtils.hasText(jwt) || !tokenService.validation(jwt)) {
-			log.debug("JwtAuthenticationFilter ::: not a valid token, token: {}", jwt);
+			log.debug("doFilterInternal::: not a valid token, token: {}", jwt);
 			failAuthentication(response);
 			return;
 		}
@@ -77,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		UsernamePasswordAuthenticationToken authentication =
 			new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		log.debug("JwtAuthenticationFilter ::: user email: {}", email);
+		log.debug("doFilterInternal::: isAuthenticated: [{}], getAuthorities: [{}]", authentication.isAuthenticated(), authentication.getAuthorities());
 
 		filterChain.doFilter(request, response);
 	}
