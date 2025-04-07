@@ -27,8 +27,7 @@ public final class UrlPath {
 	 * 인증 인가가 필요하지 않은 URL
 	 */
 	public static final List<String> NOT_REQUIRED_AUTH_URLS = Arrays.asList(
-		Auth.ROOT+ Auth.LOGIN,
-		Auth.ROOT+ Auth.LOGOUT
+		Auth.ROOT+ Auth.LOGIN
 	);
 
 }
