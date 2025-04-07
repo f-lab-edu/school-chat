@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		// JWT 토큰발급
-		return tokenService.generateToken(user);
+		return tokenService.generateToken(findUser);
 	}
 
 	@Override
